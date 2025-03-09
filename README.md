@@ -75,16 +75,22 @@ Scripts should be run in the following order:
    f. `DWR_simplification.R`: simplify DWR 2018-2022 shapfile geometry and select features of interest
    
    g. `DWR_to_raster.R`: convert DWR crop maps 2018-2022 to rasters at 500m resolution and filter to unmixed pixels (>75% one crop type in pixel)
-3. Process data into final formats for analysis and save to `data/processed_data/for_analysis` (scripts in `scripts/process_data/final`):
+
+   e. `get_crop_acerage.R`: calculate acerage per crop and county for 2018-2022 based on DWR data
+4. Process data into final formats for analysis and save to `data/processed_data/for_analysis` (scripts in `scripts/process_data/final`):
 
    a. `combine_data.R`: combine all data into one file by month and _x,y_ pixel
 
    b. `filter_combined_data.R`: filter data to crops of interest, growing season, and normalize data by month, year, county, and crop for spatial anomalies
-4. Run analysis (scripts in `scripts/analysis`):
+5. Run analysis (scripts in `scripts/analysis`):
 
    a. `random_forest.R`: run random forest models to predict WUE', GPP' and ET' and save outputs to `outputs/model_output`
 
    b. 'gap.R': run gap persistence analysis and save outputs to `outputs/gapyield_output`
-5. Generate figures and tables (scripts in `scripts/generate_outputs`):
+6. Generate figures and tables (scripts in `scripts/generate_outputs`):
 
-   a. 
+   a. `RF_models.R`: create regression, importance, and partial dependency plots and tables for WUE', GPP' and ET' models 
+
+   b. `RF_maps.R`: create spatial maps of changes in WUE', GPP' and ET savings (mm) over California's Central Valley and tables with crop information 
+
+   c. `gapyield_figures.R`: create plots and figures for temporal gap persistence analysis
