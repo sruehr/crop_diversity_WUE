@@ -39,21 +39,20 @@ The pipeline contains 5 main steps. Code is in the `scripts` folder:
 
 ## Acquiring the data
 Data were downloaded from a variety of public sources. To run this code, users should download the same datafiles and insert them into the proper folders, currently empty with .gitkeep files as placeholders, in the repository. We do not upload these data here, as they are very large files (>20 GB total). Below is information on where to find these data and the variables they contain.
+    
+Some data were downloaded manually:
+  - Annual DWR Statewde Crop Mapping (2018-2022): https://data.cnra.ca.gov/dataset/statewide-crop-mapping
+  - Annual water table depth from Fan et al. 2013, DOI 10.1126/science.1229881: http://thredds-gfnl.usc.es/thredds/catalog/GLOBALWTDFTP/catalog.html
+   - Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2019 and 2021 (DOIs 10.5194/bg-18-6579-2021 & 10.5194/bg-17-405-2020), which were generously provided by the author. 
 
-Google Earth Engine stores data on evapotranspiration, soils, topography, crop cover, and monthly meteorologic variables. We use the `scripts/data_download/GEE` scripts to download these at either constant, annual, or monthly timesteps. Below are the product names on GEE:
+Google Earth Engine (GEE) was used to download additional datasets on evapotranspiration, soils, topography, crop cover, and monthly meteorologic variables. See below for Python scripts to download these at either constant, annual, or monthly timesteps. Below are the product names on GEE:
   - Monthly OpenET (evapotranspiration): `OpenET/ENSEMBLE/CONUS/GRIDMET/MONTHLY/v2_0`
   - Monthly GRIDMET (precip, VPD, TA, SRAD): `IDAHO_EPSCOR/GRIDMET`
   - Monthly GRIDMET Drought (SPI): `GRIDMET/DROUGHT`
   - Annual USDA Crop Data Layer (crop type & cultivated regions): `USDA/NASS/CDL`
   - Constant SOILGRIDS (clay, sand, silt fraction): `projects/soilgrids-isric/`
 
-Google Earth Engine data were processed using a study region shapefile (`data/study_area`) and a standardized grid, which were uploaded to GEE as assets.
-    
-Additional data were downloaded manually:
-  - Annual DWR Statewde Crop Mapping (2018-2022): https://data.cnra.ca.gov/dataset/statewide-crop-mapping
-  - Annual water table depth from Fan et al. 2013, DOI 10.1126/science.1229881: http://thredds-gfnl.usc.es/thredds/catalog/GLOBALWTDFTP/catalog.html
-
-Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2019 and 2021 (DOIs 10.5194/bg-18-6579-2021 & 10.5194/bg-17-405-2020), which were generously provided by the author. 
+GEE requires user authentication before the Python scripts can be run. GEE data were processed using a study region shapefile (`data/study_area`) and a standardized grid, which were uploaded to GEE as assets.
 
 ## Running the code
 Scripts should be run in the following order:
