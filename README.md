@@ -29,9 +29,9 @@ The pipeline contains 5 main steps. Code is in the `scripts` folder:
 1. Downloading data where necessary from Google Earth Engine (`scripts/data_download/GEE`) (Python)
 2. Processing existing data into usable formats (`scripts/process_data`) (R)
    
-     a. Intermediate formats (transforming datasets into standard formats at 500m & monthly resolution)
+     a. Intermediate formats (transforming datasets into standard 500m & monthly resolution)
    
-     b. Final formats for analysis (combining, normalzing, and filtering data before analysis)
+     b. Final formats for analysis (combining, normalizing, and filtering data before analysis)
 
 3. Running random forest and temporal gap analyses (`scripts/analysis`) (R)
 4. Producing figures and tables (`scripts/generate_outputs`) (R)
@@ -46,10 +46,45 @@ Google Earth Engine stores data on evapotranspiration, soils, topography, crop c
   - Monthly GRIDMET Drought (SPI): `GRIDMET/DROUGHT`
   - Annual USDA Crop Data Layer (crop type & cultivated regions): `USDA/NASS/CDL`
   - Constant SOILGRIDS (clay, sand, silt fraction): `projects/soilgrids-isric/`
-Additional data were downloaded manually:
-  - Annual DWR Statewde Crop Mapping (2018-2022): [https://data.cnra.ca.gov/dataset/statewide-crop-mapping]
-  - Annual water table depth from Fan et al. 2013, DOI 10.1126/science.1229881: [http://thredds-gfnl.usc.es/thredds/catalog/GLOBALWTDFTP/catalog.html]
 
-Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2019 and 2021 (DOIs 10.5194/bg-18-6579-2021 & 10.5194/bg-17-405-2020), which were generously provided by the author.
+Google Earth Engine data were processed using a study region shapefile (`data/study_area`) and a standardized grid, which were uploaded to GEE as assets.
+    
+Additional data were downloaded manually:
+  - Annual DWR Statewde Crop Mapping (2018-2022): https://data.cnra.ca.gov/dataset/statewide-crop-mapping
+  - Annual water table depth from Fan et al. 2013, DOI 10.1126/science.1229881: http://thredds-gfnl.usc.es/thredds/catalog/GLOBALWTDFTP/catalog.html
+
+Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2019 and 2021 (DOIs 10.5194/bg-18-6579-2021 & 10.5194/bg-17-405-2020), which were generously provided by the author. 
 
 We also provide the normalized, filtered dataset on which we run random forest and temporal gap analyses (`data/processed_data/for_analysis/filtered_data.csv`)
+
+## Running the code
+Scripts should be run in the following order:
+1. Download data from Google Earth Engine (all scripts in `scripts/data_download/GEE`)
+2. Process data into intermediate forms and save to `data/processed_data` (all scripts in `scripts/process_data/intermediate`):
+   
+   a. `wtd_to_raster.R`: convert Fan et al. 2013 into standardized raster data
+   
+   b. `SIF_to_monthly.R`: convert SIF GPP estimates to mean monthly values
+   
+   c. `CDL_to_species_diversity.R`: calculate species diversity for each _x,y_ pixel using CDL data over past 5 years + current year
+   
+   d. `CDL_to_legume_flag.R`: calculate number of legume plantings for each _x,y_ pixel using CDL data over past 5 years + current year
+   
+   e. `calculate_CWD.R`: calculate cumulative water deficit using precipitation and evapotranspiration for each water year 2018-2022
+   
+   f. `DWR_simplification.R`: simplify DWR 2018-2022 shapfile geometry and select features of interest
+   
+   g. `DWR_to_raster.R`: convert DWR crop maps 2018-2022 to rasters at 500m resolution and filter to unmixed pixels (>75% one crop type in pixel)
+3. Process data into final formats for analysis and save to `data/processed_data/for_analysis` (scripts in `scripts/process_data/final`):
+
+   a. `combine_data.R`: combine all data into one file by month and _x,y_ pixel
+
+   b. `filter_combined_data.R`: filter data to crops of interest, growing season, and normalize data by month, year, county, and crop for spatial anomalies
+4. Run analysis (scripts in `scripts/analysis`):
+
+   a. `random_forest.R`: run random forest models to predict WUE', GPP' and ET' and save outputs to `outputs/model_output`
+
+   b. 'gap.R': run gap persistence analysis and save outputs to `outputs/gapyield_output`
+5. Generate figures and tables (scripts in `scripts/generate_outputs`):
+
+   a. 
