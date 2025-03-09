@@ -55,8 +55,6 @@ Additional data were downloaded manually:
 
 Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2019 and 2021 (DOIs 10.5194/bg-18-6579-2021 & 10.5194/bg-17-405-2020), which were generously provided by the author. 
 
-We also provide the normalized, filtered dataset on which we run random forest and temporal gap analyses (`data/processed_data/for_analysis/filtered_data.csv`)
-
 ## Running the code
 Scripts should be run in the following order:
 1. Download data from Google Earth Engine (all scripts in `scripts/data_download/GEE`)
