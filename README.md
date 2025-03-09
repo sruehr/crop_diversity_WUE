@@ -38,7 +38,7 @@ The pipeline contains 5 main steps. Code is in the `scripts` folder:
 
 
 ## Acquiring the data
-Data were downloaded from a variety of public sources. To run this code, users should download the same datafiles and insert them into the proper folders, currently empty, in the repository. We do not upload these data here, as they are very large files (>20 GB total). Below is information on where to find these data and the variables they contain.
+Data were downloaded from a variety of public sources. To run this code, users should download the same datafiles and insert them into the proper folders, currently empty with .gitkeep files as placeholders, in the repository. We do not upload these data here, as they are very large files (>20 GB total). Below is information on where to find these data and the variables they contain.
 
 Google Earth Engine stores data on evapotranspiration, soils, topography, crop cover, and monthly meteorologic variables. We use the `scripts/data_download/GEE` scripts to download these at either constant, annual, or monthly timesteps. Below are the product names on GEE:
   - Monthly OpenET (evapotranspiration): `OpenET/ENSEMBLE/CONUS/GRIDMET/MONTHLY/v2_0`
