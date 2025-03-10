@@ -23,14 +23,14 @@ quantiles <- c(0.1, 0.9)
 threshold = 10
 
 # Read in data outputs from RF model --------------------------------------
-# 1. CWE
-model_filename_cwe <- here::here("outputs", "model_output", paste0('RF_model_CWE.rds'))
-model_cwe <- readRDS(model_filename_cwe)
+# 1. WUE
+model_filename_wue <- here::here("outputs", "model_output", paste0('RF_model_WUE.rds'))
+model_wue <- readRDS(model_filename_wue)
 
-training_filename_cwe <- here::here("outputs", "model_output", paste0('RF_model_training_CWE.csv'))
-testing_filename_cwe <- here::here("outputs", "model_output", paste0('RF_model_testing_CWE.csv'))
-testing <- fread(testing_filename_cwe)
-training <- fread(training_filename_cwe)
+training_filename_wue <- here::here("outputs", "model_output", paste0('RF_model_training_WUE.csv'))
+testing_filename_wue <- here::here("outputs", "model_output", paste0('RF_model_testing_WUE.csv'))
+testing <- fread(testing_filename_wue)
+training <- fread(training_filename_wue)
 
 # 2. GPP
 model_filename_gpp <- here::here("outputs", "model_output", paste0('RF_model_GPP.rds'))
@@ -103,13 +103,13 @@ div_bins <- opt_data %>%
 opt_data <- opt_data %>% 
   merge(div_bins, by= c('county', 'crop'))
 
-# Predict CWE under high & low diversity
+# Predict WUE under high & low diversity
 opt_data$diversity_obs <- opt_data$diversity
 opt_data$diversity <- opt_data$low_div
-opt_data$cwe15 <- predict(model_cwe, data = opt_data)$predictions
+opt_data$wue15 <- predict(model_wue, data = opt_data)$predictions
 opt_data$gpp15 <- predict(model_gpp, data = opt_data)$predictions
 opt_data$diversity <- opt_data$high_div
-opt_data$cwe85 <- predict(model_cwe, data = opt_data)$predictions
+opt_data$wue85 <- predict(model_wue, data = opt_data)$predictions
 opt_data$gpp85 <- predict(model_gpp, data = opt_data)$predictions
 
 # Convert scaled to original values
@@ -117,9 +117,9 @@ data_o <- opt_data %>%
   mutate(
     
     # Scale into original units from z-score
-    cwe_pred_o = (pred * cwe_sd) + cwe_mean,
-    cwe85_o = (cwe85 * cwe_sd) + cwe_mean,
-    cwe15_o = (cwe15 * cwe_sd) + cwe_mean,
+    wue_pred_o = (pred * wue_sd) + wue_mean,
+    wue85_o = (wue85 * wue_sd) + wue_mean,
+    wue15_o = (wue15 * wue_sd) + wue_mean,
     
     gpp_pred_o = (pred * gpp_sd) + gpp_mean,
     gpp85_o = (gpp85 * gpp_sd) + gpp_mean,
@@ -129,16 +129,16 @@ data_o <- opt_data %>%
   mutate(
     
     # # Calculate % change
-    percent_change_cwe = ((cwe85 - cwe15) / abs(cwe15)) * 100,
-    percent_change_cwe_o = ((cwe85_o - cwe15_o) / abs(cwe15_o)) * 100,
+    percent_change_wue = ((wue85 - wue15) / abs(wue15)) * 100,
+    percent_change_wue_o = ((wue85_o - wue15_o) / abs(wue15_o)) * 100,
     
     percent_change_gpp = ((gpp85 - gpp15) / abs(gpp15)) * 100,
     percent_change_gpp_o = ((gpp85_o - gpp15_o) / abs(gpp15_o)) * 100,
     
-    # Calculate water savings by dividing observed GPP by predicted CWE.
-    et_pred_o = gpp / cwe_pred_o,
-    et85_o = gpp / cwe85_o,
-    et15_o = gpp / cwe15_o,
+    # Calculate water savings by dividing observed GPP by predicted WUE
+    et_pred_o = gpp / wue_pred_o,
+    et85_o = gpp / wue85_o,
+    et15_o = gpp / wue15_o,
     
     # Calculate water savings (difference between low and high diversity)
     water_savings = (et15_o - et85_o) * 30, # Convert from mm per day to mm per month
@@ -223,15 +223,15 @@ make_map <- function(data = data_o, variable, break_seq, break_labs, palette, le
   
 }
 
-# % Change CWE observed by crop
-break_seq_cwe <- c(-1e6, seq(0, 20, by = 5), 1e100)
-break_labs_cwe <- c('< 0', '0-5', '5-10', '10-15', '15-20', '> 20')
-blue_palette <- c('orange', brewer.pal(length(break_labs_cwe), "Blues")[-1])
-del_cwe <- make_map(variable = 'percent_change_cwe_o', facet_flag = F,
-         break_seq = break_seq_cwe, break_labs = break_labs_cwe,
+# % Change WUE observed by crop
+break_seq_wue <- c(-1e6, seq(0, 20, by = 5), 1e100)
+break_labs_wue <- c('< 0', '0-5', '5-10', '10-15', '15-20', '> 20')
+blue_palette <- c('orange', brewer.pal(length(break_labs_wue), "Blues")[-1])
+del_wue <- make_map(variable = 'percent_change_wue_o', facet_flag = F,
+         break_seq = break_seq_wue, break_labs = break_labs_wue,
          palette = blue_palette, legend_label_expr = expression(Delta*'WUE (%)'))
-del_cwe_by_crop <- make_map(variable = 'percent_change_cwe_o', facet_flag = T,add_county_names = F,
-                    break_seq = break_seq_cwe, break_labs = break_labs_cwe,
+del_wue_by_crop <- make_map(variable = 'percent_change_wue_o', facet_flag = T,add_county_names = F,
+                    break_seq = break_seq_wue, break_labs = break_labs_wue,
                     palette = blue_palette, legend_label_expr = expression(Delta*'WUE (%)'))
 
 # % Change GPP by crop
@@ -257,14 +257,14 @@ del_water_by_crop <- make_map(variable = 'water_savings', facet_flag = T,add_cou
                       palette = purple_palette, legend_label_expr = expression(Delta*'ET (mm)')) 
 
 # Arrange plots
-arranged_plots <- cowplot::plot_grid(del_cwe, 
+arranged_plots <- cowplot::plot_grid(del_wue, 
                                      del_gpp + theme(axis.text.y = element_blank()), 
                                      del_water+ theme(axis.text.y = element_blank()), 
                                      nrow = 1, align = 'v', labels = 'auto', 
                                      label_size = 16,
                                      label_x = 0.09, label_y = 0.995)
 
-arranged_plots_by_crop <- cowplot::plot_grid(del_cwe_by_crop + theme(axis.text.x = element_blank()), 
+arranged_plots_by_crop <- cowplot::plot_grid(del_wue_by_crop + theme(axis.text.x = element_blank()), 
                                      del_gpp_by_crop + theme(axis.text.x = element_blank(),
                                                              strip.text = element_blank()), 
                                      del_water_by_crop + theme(strip.text = element_blank()), 
@@ -299,10 +299,10 @@ make_boxplot <- function(variable, lim, data = data_boxplot, axis_label,
   }
 
 et_box <- make_boxplot(variable = 'water_savings', lim = c(-30, 50), axis_label = expression(Delta*'ET (mm)'))
-cwe_box <- make_boxplot(variable = 'percent_change_cwe_o', lim = c(-40, 40), axis_label = expression(Delta*'WUE (%)'))
+wue_box <- make_boxplot(variable = 'percent_change_wue_o', lim = c(-40, 40), axis_label = expression(Delta*'WUE (%)'))
 gpp_box <- make_boxplot(variable = 'percent_change_gpp_o', lim = c(-35, 80), axis_label = expression(Delta*'GPP (%)'))
 
-box_plots <- cowplot::plot_grid(cwe_box + theme(axis.text.x = element_blank(),
+box_plots <- cowplot::plot_grid(wue_box + theme(axis.text.x = element_blank(),
                                    axis.ticks.x = element_blank(),
                                    legend.position = c(0.1, 0.2),
                                    legend.background = element_rect(color = 'black', linewidth = 0.3)), 
@@ -312,7 +312,7 @@ box_plots <- cowplot::plot_grid(cwe_box + theme(axis.text.x = element_blank(),
                    et_box + theme(legend.position = 'none'),
                    ncol = 1, align = 'v', rel_heights = c(1, 1, 1.3))
 
-box_plots_both <- cowplot::plot_grid(cwe_box + theme(legend.position = c(0.5, 0.1),
+box_plots_both <- cowplot::plot_grid(wue_box + theme(legend.position = c(0.5, 0.1),
                                                      legend.direction = 'horizontal',
                                                      legend.background = element_rect(color = NA, fill = NA)),
                                      gpp_box + theme(legend.position = 'none'), 
@@ -336,8 +336,8 @@ ggsave(maps_filename_by_crop, arranged_plots_by_crop, width = 8.8, height = 9.6,
 
 
 # Estimate median values --------------------------------------------------
-mean(data_o$percent_change_cwe_o)
-sd(data_o$percent_change_cwe_o)
+mean(data_o$percent_change_wue_o)
+sd(data_o$percent_change_wue_o)
 
 
 max(data_o$percent_change_gpp_o)
@@ -349,15 +349,15 @@ sd(data_o$water_savings)
 
 data_o %>% 
   group_by(crop, county) %>% 
-  summarise(med = mean(percent_change_cwe_o),
-            sd = sd(percent_change_cwe_o)) %>% 
+  summarise(med = mean(percent_change_wue_o),
+            sd = sd(percent_change_wue_o)) %>% 
   arrange(desc(med))
 
 data_o %>% 
   filter(crop == 'Wheat') %>% 
   group_by(county) %>% 
-  summarise(med = mean(percent_change_cwe_o),
-            sd = sd(percent_change_cwe_o)) %>% 
+  summarise(med = mean(percent_change_wue_o),
+            sd = sd(percent_change_wue_o)) %>% 
   arrange(desc(med))
 
 
@@ -402,21 +402,21 @@ sum(fresno$water_saved) / sum(fresno$total_et) * 100
 # Save tables -------------------------------------------------------------
 # Table
 by_crop_county <- data_o %>% 
-  dplyr::select(county, water_savings, percent_change_cwe_o, percent_change_gpp_o, crop) %>% 
+  dplyr::select(county, water_savings, percent_change_wue_o, percent_change_gpp_o, crop) %>% 
   # filter(county %in% centroids_of_interest$county) %>% 
   group_by(county, crop) %>% 
   summarise(et = mean(water_savings),
             et_sd = sd(water_savings),
-            cwe = mean(percent_change_cwe_o),
-            cwe_sd = sd(percent_change_cwe_o),
+            wue = mean(percent_change_wue_o),
+            wue_sd = sd(percent_change_wue_o),
             gpp = mean(percent_change_gpp_o),
             gpp_sd = sd(percent_change_gpp_o)) %>% 
   merge(total_saved %>% dplyr::select(water_saved, county, crop), by = c('county', 'crop')) %>% 
   mutate(water_saved_m3_per_month = round(water_saved)) %>% 
   mutate(water_savings_mm_per_month = paste(round(et, 2), 'pm', round(et_sd,2))) %>% 
   mutate(del_gpp_perc = paste(round(gpp, 2), 'pm', round(gpp_sd,2))) %>% 
-  mutate(del_cwe_perc = paste(round(cwe, 2), 'pm', round(cwe_sd,2))) %>% 
-  dplyr::select(crop, county,del_cwe_perc, del_gpp_perc, water_savings_mm_per_month, water_saved_m3_per_month)  %>% 
+  mutate(del_wue_perc = paste(round(wue, 2), 'pm', round(wue_sd,2))) %>% 
+  dplyr::select(crop, county,del_wue_perc, del_gpp_perc, water_savings_mm_per_month, water_saved_m3_per_month)  %>% 
   arrange(crop, desc(water_saved_m3_per_month))
 
 by_crop_county %>% 
@@ -430,38 +430,38 @@ by_crop_county %>%
 
 
 by_crop <- data_o %>% 
-  dplyr::select(county, water_savings, percent_change_cwe_o, percent_change_gpp_o, crop) %>% 
+  dplyr::select(county, water_savings, percent_change_wue_o, percent_change_gpp_o, crop) %>% 
   group_by(crop) %>% 
   summarise(et = mean(water_savings),
             et_sd = sd(water_savings),
-            cwe = mean(percent_change_cwe_o),
-            cwe_sd = sd(percent_change_cwe_o),
+            wue = mean(percent_change_wue_o),
+            wue_sd = sd(percent_change_wue_o),
             gpp = mean(percent_change_gpp_o),
             gpp_sd = sd(percent_change_gpp_o)) %>% 
   mutate(water_savings_mm = paste(round(et, 2), 'pm', round(et_sd,2))) %>% 
   mutate(del_gpp_perc = paste(round(gpp, 2), 'pm', round(gpp_sd,2))) %>% 
-  mutate(del_cwe_perc = paste(round(cwe, 2), 'pm', round(cwe_sd,2))) %>% 
-  dplyr::select(crop,del_cwe_perc, del_gpp_perc, water_savings_mm)
+  mutate(del_wue_perc = paste(round(wue, 2), 'pm', round(wue_sd,2))) %>% 
+  dplyr::select(crop,del_wue_perc, del_gpp_perc, water_savings_mm)
 
 full <- c('Full', 
-          paste(round(mean(data_o$percent_change_cwe_o),2), 'pm', round(sd(data_o$percent_change_cwe_o),2)),
+          paste(round(mean(data_o$percent_change_wue_o),2), 'pm', round(sd(data_o$percent_change_wue_o),2)),
           paste(round(mean(data_o$percent_change_gpp_o),2), 'pm', round(sd(data_o$percent_change_gpp_o),2)),
           paste(round(mean(data_o$water_savings),2), 'pm', round(sd(data_o$water_savings),2)))
 by_crop <- rbind(full, by_crop)
 
 by_county <- data_o %>% 
-  dplyr::select(county, water_savings, percent_change_cwe_o, percent_change_gpp_o, crop) %>% 
+  dplyr::select(county, water_savings, percent_change_wue_o, percent_change_gpp_o, crop) %>% 
   group_by(county) %>% 
   summarise(et = mean(water_savings),
             et_sd = sd(water_savings),
-            cwe = mean(percent_change_cwe_o),
-            cwe_sd = sd(percent_change_cwe_o),
+            wue = mean(percent_change_wue_o),
+            wue_sd = sd(percent_change_wue_o),
             gpp = mean(percent_change_gpp_o),
             gpp_sd = sd(percent_change_gpp_o)) %>% 
   mutate(water_savings_mm = paste(round(et, 2), 'pm', round(et_sd,2))) %>% 
   mutate(del_gpp_perc = paste(round(gpp, 2), 'pm', round(gpp_sd,2))) %>% 
-  mutate(del_cwe_perc = paste(round(cwe, 2), 'pm', round(cwe_sd,2))) %>% 
-  dplyr::select(county,del_cwe_perc, del_gpp_perc, water_savings_mm)
+  mutate(del_wue_perc = paste(round(wue, 2), 'pm', round(wue_sd,2))) %>% 
+  dplyr::select(county,del_wue_perc, del_gpp_perc, water_savings_mm)
 
 write_table_wd <- here::here('outputs', 'tables')
 write.csv(by_crop, paste0(write_table_wd, '/change_by_crop.csv'))
