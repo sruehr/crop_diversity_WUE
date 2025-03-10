@@ -58,10 +58,10 @@ GEE requires user authentication before the Python scripts can be run. GEE data 
 Scripts should be run in the following order:
 1. Download data from Google Earth Engine (all scripts in `scripts/data_download/GEE`)
 2. Process data into intermediate forms and save to `data/processed_data` (all scripts in `scripts/process_data/intermediate`):
-   
-   a. `wtd_to_raster.R`: convert Fan et al. 2013 into standardized raster data
-   
-   b. `SIF_to_monthly.R`: convert SIF GPP estimates to mean monthly values
+      
+   a. `SIF_to_monthly.R`: convert SIF GPP estimates to mean monthly values. The output grid will serve as the target for following product processing.
+
+   b. `wtd_to_raster.R`: convert Fan et al. 2013 into standardized raster data
    
    c. `CDL_to_species_diversity.R`: calculate species diversity for each _x,y_ pixel using CDL data over past 5 years + current year
    
