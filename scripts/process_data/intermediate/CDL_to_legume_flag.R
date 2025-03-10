@@ -17,8 +17,8 @@ resample_grid <- raster(file)
 
 
 # Open CDL raster files and cultivated layer information
-cdl_files <- list.files(here::here('data', 'raw_data', 'CDL'), pattern = 'CDL', full.names = T)
-cultivated_files <- list.files(here::here('data', 'raw_data', 'CDL'), pattern = 'cultivated', full.names = T)
+cdl_files <- list.files(here::here('data', 'raw_data', 'GEE', 'CDL'), pattern = 'CDL', full.names = T)
+cultivated_files <- list.files(here::here('data', 'raw_data', 'GEE', 'CDL'), pattern = 'cultivated', full.names = T)
 
 # Stack data
 stacked_raster <- stack(cdl_files)
