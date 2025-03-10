@@ -22,7 +22,7 @@ data <- data %>%
   mutate(et = et / days_in_month) %>% 
   select(-days_in_month)
 
-# Filter to growing season for each pixel year
+# Filter to growing season (top 2 GPP months not in winter) for each pixel year
 monthly_gpp <- data[month %in% 3:10,  # Removing winter (Nov-Feb)
                     .SD, 
                     by = .(year, month, x, y)][
