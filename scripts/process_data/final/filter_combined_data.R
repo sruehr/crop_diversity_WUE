@@ -37,8 +37,8 @@ data_gs <- merge(data, monthly_gpp, by = c('year', 'month', 'x', 'y')) %>%
 data_gs <- data_gs %>% 
   filter(cwd < 0)
 
-# Calculate cwe 
-data_gs$cwe <- data_gs$gpp / data_gs$et
+# Calculate wue 
+data_gs$wue <- data_gs$gpp / data_gs$et
 
 # Add crop info
 crop_files <- list.files(here::here('data', 'processed_data',"DWR", 'rasters'), pattern = '.csv', full.names = T)
@@ -94,7 +94,7 @@ calculate_extremes <- function(data = data_gs, variable, group_var = 'crop') {
 grouping_vars=c('crop', 'county')
 gpp_extreme <- calculate_extremes(variable = 'gpp', group_var = grouping_vars)
 et_extreme <- calculate_extremes(variable = 'et', group_var = grouping_vars)
-cwe_extreme <- calculate_extremes(variable = 'cwe', group_var = grouping_vars)
+wue_extreme <- calculate_extremes(variable = 'wue', group_var = grouping_vars)
 vpd_extreme <- calculate_extremes(variable = 'vpd', group_var =grouping_vars)
 annual_pr_extreme <- calculate_extremes(variable = 'annual_pr', group_var = grouping_vars)
 wtd_extreme <- calculate_extremes(variable = 'wtd', group_var = grouping_vars)
@@ -105,7 +105,7 @@ srad_extreme <- calculate_extremes(variable = 'srad', group_var = grouping_vars)
 data_extremes <- data_gs %>% 
   merge(gpp_extreme, by = grouping_vars) %>% 
   merge(et_extreme, by = grouping_vars) %>% 
-  merge(cwe_extreme, by = grouping_vars) %>% 
+  merge(wue_extreme, by = grouping_vars) %>% 
   merge(vpd_extreme, by = grouping_vars) %>% 
   merge(annual_pr_extreme, by = grouping_vars) %>% 
   merge(wtd_extreme, by = grouping_vars) %>% 
@@ -123,12 +123,12 @@ remove_extreme <- function(data, variable, threshold = 3) {
     select(-matches(paste0(variable, "_mean|", variable, "_sd")), -diff, -limit)
 }
 
-variables <- c("gpp", "et", "cwe", "vpd", "annual_pr", "wtd", "spi", "srad")
+variables <- c("gpp", "et", "wue", "vpd", "annual_pr", "wtd", "spi", "srad")
 
 data_for_scaling <- data_extremes %>%
   remove_extreme('gpp', threshold = 3) %>%
   remove_extreme('et', threshold = 3) %>%
-  remove_extreme('cwe', threshold = 3) %>%
+  remove_extreme('wue', threshold = 3) %>%
   remove_extreme('vpd', threshold = 3) %>%
   remove_extreme('annual_pr', threshold = 3) %>%
   remove_extreme('wtd', threshold = 3) %>%
@@ -156,13 +156,13 @@ for (i in 1:length(years)) {
         if (dim(dati)[1] > 5) { # >5 observations per month, year, crop (exclude n<5 observations)
             # I CHANGED THIS TO 10 in the FINAL!
           scaled_vars <- dati %>% 
-            summarise_at(.vars = c('gpp', 'cwe', 'et', 'vpd','srad'),
+            summarise_at(.vars = c('gpp', 'wue', 'et', 'vpd','srad'),
                          .funs = list('sd' = sd, 'mean' = mean),
                          na.rm = T)
           dati <- cbind(dati,scaled_vars)
           
           dati <- dati %>% 
-            mutate(cwe_scaled = (cwe - cwe_mean) / cwe_sd, 
+            mutate(wue_scaled = (wue - wue_mean) / wue_sd, 
                    gpp_scaled = (gpp - gpp_mean) / gpp_sd,
                    et_scaled = (et - et_mean) / et_sd,
                    vpd_scaled = (vpd - vpd_mean) / vpd_sd, 
