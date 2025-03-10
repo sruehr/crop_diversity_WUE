@@ -16,9 +16,6 @@ setwd(folder_wd)
 
 # Open DWR file
 file <- setdiff(list.files(pattern = '.shp'), list.files(pattern = '.shp.xml'))
-
-  
-# Following code adapted from Boser et al. 2024's code on GitHub, https://github.com/anna-boser/ET_ag_OpenET/blob/main/code/1_generate_datasets/2_additional_data/2_crops.R
 DWR <- read_sf(file) 
 
 vars_of_interest <- c( 'geometry','UCF_ATT', 'COUNTY', 'ACRES', 'CLASS2', 'SUBCLASS2')
