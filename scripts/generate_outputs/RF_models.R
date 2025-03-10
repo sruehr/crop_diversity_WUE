@@ -10,12 +10,12 @@ p_load(ggplot2, data.table, here, plyr, dplyr, corrplot,ModelMetrics, tidyr,
        sf,  rnaturalearth, rnaturalearthdata,raster, patchwork)
 
 # To generate all required outputs, this code should be ***run 3 times***
-# x3: predicted_variable = 'gpp', 'et', and 'cwe' as target variable
+# x3: predicted_variable = 'gpp', 'et', and 'wue' as target variable
   # Or you could write a loop but I was lazy ;)
 
 # Main choices --------------------------------------------------------------
 # Set variable of interest
-predicted_variable <- 'cwe' # choose from 'cwe', 'et', or 'gpp'
+predicted_variable <- 'wue' # choose from 'wue', 'et', or 'gpp'
 
 # Set additional parameters -----------------------------------------------------------
 
@@ -30,8 +30,8 @@ textsize = 8.5
 quantiles <- c(0.25, 0.75)
 
 # Set filename & figure labels bassed on variable
-if (predicted_variable == 'cwe') {
-  filename_appendix <- '_CWE'
+if (predicted_variable == 'wue') {
+  filename_appendix <- '_WUE'
   axis_lab <- 'WUE'
 } else if (predicted_variable == 'gpp') {
   filename_appendix <- '_GPP'
@@ -335,7 +335,7 @@ for (i in 1:length(pdp_runs)) {
 
 
 # Absolute change plots ---------------------------------------------------
-calculate_absolute_change_ci_vector <- function(old_values = bottom_cwe, new_values = top_cwe, alpha = 0.05) {
+calculate_absolute_change_ci_vector <- function(old_values = bottom_wue, new_values = top_wue, alpha = 0.05) {
   
   # Calculate mean of old and new values
   mean_old <- mean(old_values, na.rm = T)
@@ -461,7 +461,7 @@ importance_plot <- imp_summary %>%
 
 # Correlation plot  --------------------------------------------------------
 cor_matrix <- training %>%
-  mutate(CWE = gap, 
+  mutate(WUE = gap, 
          Diversity = diversity,
          Legumes = legume5,
          VPD = vpd_scaled,
@@ -470,7 +470,7 @@ cor_matrix <- training %>%
          'Annual precip' = annual_pr,
          Clay = clay,
          WTD = wtd,) %>% 
-  dplyr::select(c(CWE, Diversity, 
+  dplyr::select(c(WUE, Diversity, 
                   Legumes,
                   VPD, SRAD, SPI, 
                   'Annual precip',
@@ -490,7 +490,7 @@ write.csv(regression_table, paste0(table_save_wd, '/model_performance', filename
 importance_table <- imp_summaries %>% dplyr::select(variable, mean, lower_ci, upper_ci) 
 write.csv(importance_table, paste0(table_save_wd, '/variable_importance', filename_appendix, '.csv'))
 
-# 3. Percentage change in CWE from low to high quantiles
+# 3. Percentage change in WUE from low to high quantiles
 change_table <- change_data %>% 
   mutate(sd = change - lower_ci) %>% 
   dplyr::select(-shape, -color) %>% 
