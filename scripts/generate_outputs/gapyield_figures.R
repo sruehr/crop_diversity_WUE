@@ -62,9 +62,9 @@ subdivided_sf <- subdivided_sf %>% mutate(county = NAME) %>%
 sig_diff <- data %>%
   filter(win < 5, win > 1) %>%
   group_by(win, county) %>%
-  filter(n_distinct(cwe_scaled_spread_n) > 1 & n_distinct(cwe_scaled_spread_o) > 1) %>%
+  filter(n_distinct(wue_scaled_spread_n) > 1 & n_distinct(wue_scaled_spread_o) > 1) %>%
   summarize(
-    t_test = list(t.test(cwe_scaled_spread_o, cwe_scaled_spread_n, var.equal = TRUE)),  # Assuming equal variance
+    t_test = list(t.test(wue_scaled_spread_o, wue_scaled_spread_n, var.equal = TRUE)),  # Assuming equal variance
     .groups = "drop"
   ) %>%
   mutate(
@@ -88,12 +88,12 @@ legendsize <- 0.4
 data_summary <- data %>%
   group_by(county, win) %>%
   summarize(
-    cwe_o = mean(cwe_scaled_spread_o),
-    cwe_o_sd = sd(cwe_scaled_spread_o),
+    wue_o = mean(wue_scaled_spread_o),
+    wue_o_sd = sd(wue_scaled_spread_o),
     div_o = mean(diversity_scaled_spread_o),
     div_o_sd = sd(diversity_scaled_spread_o),
-    cwe_n = mean(cwe_scaled_spread_n),
-    cwe_n_sd = sd(cwe_scaled_spread_n),
+    wue_n = mean(wue_scaled_spread_n),
+    wue_n_sd = sd(wue_scaled_spread_n),
     div_n = mean(diversity_scaled_spread_n),
     div_n_sd = sd(diversity_scaled_spread_n),
     .groups = 'drop') %>% 
@@ -101,8 +101,8 @@ data_summary <- data %>%
 
 data_summary %>% 
   filter(win == 4) %>% 
-  summarise(median(cwe_o),
-            sd(cwe_o))
+  summarise(median(wue_o),
+            sd(wue_o))
 
 lineplot <- data_summary %>% 
   filter(win < 5) %>% 
@@ -116,14 +116,14 @@ lineplot <- data_summary %>%
               show.legend = c(fill = F)) +
   geom_path(aes(y = div_n, col = 'Diversity', linetype = 'Null'), alpha = 0.5) +
   geom_path(aes(y = div_o, col = 'Diversity', linetype = 'Observed')) +
-  geom_ribbon(aes(ymin = cwe_n, ymax = cwe_o,
+  geom_ribbon(aes(ymin = wue_n, ymax = wue_o,
                   fill = 'WUE'), alpha = 0.15,
               show.legend = c(fill = F)) +
-  geom_path(aes(y = cwe_n, col = 'WUE', linetype = 'Null'), alpha = 0.5) +
-  geom_path(aes(y = cwe_o, col = 'WUE', linetype = 'Observed')) +
+  geom_path(aes(y = wue_n, col = 'WUE', linetype = 'Null'), alpha = 0.5) +
+  geom_path(aes(y = wue_o, col = 'WUE', linetype = 'Observed')) +
   
   geom_point(aes(y = div_o, col = 'Diversity', shape = sig)) +
-  geom_point(aes(y = cwe_o, col = 'WUE', shape = sig)) +
+  geom_point(aes(y = wue_o, col = 'WUE', shape = sig)) +
   
   facet_wrap(~county)  +
   scale_linetype_manual(values = c('dashed', 'solid')) +
@@ -156,7 +156,7 @@ mapplot <- subdivided_sf %>%
   mutate(sig = as.factor(ifelse(is.na(sig), 'Non-sig', sig))) %>% 
   filter(win < 5, win > 1) %>%
   # group_by(county) %>% 
-  # summarise(cwe_o)
+  # summarise(wue_o)
   ggplot() +
   geom_sf(data = ca_counties_wgs84, fill = "white", color = "black", size = 0.5) + # California outline
   geom_sf(data = central_valley, fill = NA, color = '#367dd9', linewidth = 0.7)  +
@@ -179,7 +179,7 @@ mapplot <- subdivided_sf %>%
                      limits = c(-123, -118.4)) +
   facet_wrap(~win, nrow = 1) +
   geom_sf_pattern(aes(pattern = sig, 
-                      fill = cwe_o),
+                      fill = wue_o),
                   pattern_density = 0.01,  
                   pattern_spacing = 0.04,  
                   pattern_color = "black", 
@@ -214,7 +214,7 @@ get_summary_lm <- function(window) {
 
   dat <- data_summary %>% 
     filter(win == window)
-  lm_out <- summary(lm(dat$cwe_o ~ dat$div_o))
+  lm_out <- summary(lm(dat$wue_o ~ dat$div_o))
   return_vals <- data.frame(p =  lm_out$coefficients[2, 4],
                             r = lm_out$r.squared,
                             win = window) %>% 
@@ -228,14 +228,14 @@ lm_vals <- lapply(c(2, 3, 4), get_summary_lm) %>%
 
 scatterplot <- data_summary %>% 
   filter(win > 1) %>% 
-  ggplot(aes(y = cwe_o, 
+  ggplot(aes(y = wue_o, 
              x = div_o)) +
   geom_smooth(method = 'lm', col= 'black', 
               alpha = 0.2, linewidth = 0.7) +
   geom_errorbar(data = data_summary %>% filter(!county %in% sig_diff$county,
                                                win > 1),
-                aes(ymin = cwe_o - cwe_o_sd,
-                    ymax = cwe_o + cwe_o_sd),
+                aes(ymin = wue_o - wue_o_sd,
+                    ymax = wue_o + wue_o_sd),
                 alpha =0.4, col = 'darkgrey') +
   geom_errorbar(data = data_summary %>% filter(!county %in% sig_diff$county,
                                                win > 1),
@@ -253,8 +253,8 @@ scatterplot <- data_summary %>%
                 alpha = 0.4) +
   geom_errorbar(data = data_summary %>% filter(county %in% sig_diff$county,
                                                win > 1),
-                aes(ymin = cwe_o - cwe_o_sd,
-                    ymax = cwe_o + cwe_o_sd, col = county),
+                aes(ymin = wue_o - wue_o_sd,
+                    ymax = wue_o + wue_o_sd, col = county),
                 alpha =0.4) +
   geom_point(data = data_summary %>% filter(county %in% sig_diff$county,
                                             win > 1), 
@@ -300,31 +300,31 @@ sig_diff_save <- subdivided_sf %>%
   mutate(sig = as.factor(ifelse(is.na(sig), 'Non-sig', sig))) %>% 
   filter(win < 5, win > 1) %>% 
   as.data.frame() %>% 
-  mutate(cwe = round(cwe_o, 2),
-         cwe_sd = round(cwe_o_sd, 2),
+  mutate(wue = round(wue_o, 2),
+         wue_sd = round(wue_o_sd, 2),
          div = round(div_o, 2),
          div_sd = round(div_o_sd, 2)) %>% 
-  mutate(CWEg = paste0(cwe, '$pm$', cwe_sd),
+  mutate(WUEg = paste0(wue, '$pm$', wue_sd),
          DIVg = paste0(div, '$pm$', div_sd)) %>% 
   arrange(county) %>% 
   merge(sig_diff, by=c('win', 'county'), all = T) %>% 
-  dplyr::select(win, county, CWEg, DIVg, p_value)  %>% 
+  dplyr::select(win, county, WUEg, DIVg, p_value)  %>% 
   mutate(p_value = ifelse(is.na(p_value), 'p$>$0.05', p_value)) %>% 
   filter(win == 3)
 
 
 write.csv(sig_diff_save, paste0(save_table_wd, '/gap_yield_sig.csv'))
 
-# Median CWE gap
-median(data_summary$cwe_o[data_summary$win == 3], na.rm = T)
-sd(data_summary$cwe_o[data_summary$win == 3], na.rm = T)
+# Median WUE gap
+median(data_summary$wue_o[data_summary$win == 3], na.rm = T)
+sd(data_summary$wue_o[data_summary$win == 3], na.rm = T)
 
 # Print highest gaps
 sig_diff_save %>% 
   filter(win == 3) %>% 
   filter(!p_value == 'p$>$0.05') %>%
-  mutate(cwe = as.numeric(substr(CWEg, 1, 4))) %>% 
-  arrange(desc(cwe)) 
+  mutate(wue = as.numeric(substr(WUEg, 1, 4))) %>% 
+  arrange(desc(wue)) 
 
 
 #  Is diversity a significant driver? ------------------------------------------------------------------
@@ -332,7 +332,7 @@ sig_diff_save %>%
 model_data <- data %>% filter(win > 1,win < 5) 
 
 # Linear mixed says yes
-model <- lm(cwe_scaled_spread_o ~ 
+model <- lm(wue_scaled_spread_o ~ 
               diversity_scaled_spread_o + 
               annual_pr_spread_o + 
               vpd_scaled_spread_o +
@@ -343,7 +343,7 @@ summary(model)
 
   # GAM says yes
 k = 4
-model <-  gam(cwe_scaled_spread_o ~ 
+model <-  gam(wue_scaled_spread_o ~ 
                 s(diversity_scaled_spread_o, k = k) + 
                 s(annual_pr_spread_o, k = k - 1) + 
                 s(vpd_scaled_spread_o, k = k + 1) +
