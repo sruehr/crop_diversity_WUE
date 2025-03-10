@@ -84,11 +84,11 @@ Scripts should be run in the following order:
 
    a. `random_forest.R`: run random forest models to predict WUE', GPP' and ET' and save outputs to `outputs/model_output`
 
-   b. 'gap.R': run gap persistence analysis and save outputs to `outputs/gapyield_output`
+   b. `gap.R`: run gap persistence analysis and save outputs to `outputs/gapyield_output`
 6. Generate figures and tables (scripts in `scripts/generate_outputs`):
 
    a. `RF_models.R`: create regression, importance, and partial dependency plots and tables for WUE', GPP' and ET' models 
 
    b. `RF_maps.R`: create spatial maps of changes in WUE', GPP' and ET savings (mm) over California's Central Valley and tables with crop information 
 
-   c. `gapyield_figures.R`: create plots and figures for temporal gap persistence analysis
+   c. `gap_figures.R`: create plots and figures for temporal gap persistence analysis
