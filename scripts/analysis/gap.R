@@ -1,6 +1,6 @@
 # Sophie Ruehr
 # Dec 30 2024
-# Gap yield analysis
+# WUE gap analysis
 
 gc()
 rm(list = ls())
@@ -9,7 +9,7 @@ p_load(scales, ggplot2, plyr, dplyr, tidyr, ggpubr,ggpattern, RColorBrewer,
        data.table, here, parallel)
 
 # Select variables of interest on which to perform analysis
-input_vars <- c('cwe_scaled', 'diversity_scaled',
+input_vars <- c('wue_scaled', 'diversity_scaled',
                 'vpd_scaled', 'annual_pr', 'wtd',
                 'srad_scaled', 'spi', 'clay')
 
@@ -42,7 +42,7 @@ years <- as.numeric(unique(data_filt$year)) # Get windows of average yield over 
 window_no <- seq(1:5) # number of unique windows
 
 # function over window of size `win`
-get_av_null <- function(df = data_filt, win, years, vars = c('cwe_scaled')) {
+get_av_null <- function(df = data_filt, win, years, vars = c('wue_scaled')) {
 
   # Get the number of group combinations based on window size
   yr_groups <- combn(years, win, simplify = TRUE)
@@ -65,7 +65,7 @@ get_av_null <- function(df = data_filt, win, years, vars = c('cwe_scaled')) {
      ungroup() %>% 
      add_count(county)
    
-   # Calculate CWE gap (95th percentile - median)
+   # Calculate WUE gap (95th percentile - median)
    observed_gap_l <- mean_values_window %>% 
      mutate(n_obs = n) %>% 
      group_by(county, n_obs) %>% 
