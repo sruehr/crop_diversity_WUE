@@ -67,13 +67,14 @@ Scripts should be run in the following order:
    
    d. `CDL_to_legume_flag.R`: calculate number of legume plantings for each _x,y_ pixel using CDL data over past 5 years + current year
    
-   e. `calculate_CWD.R`: calculate cumulative water deficit using precipitation and evapotranspiration for each water year 2018-2022
+   e. `DWR_simplification.R`: simplify DWR 2018-2022 shapfile geometry and select features of interest
    
-   f. `DWR_simplification.R`: simplify DWR 2018-2022 shapfile geometry and select features of interest
-   
-   g. `DWR_to_raster.R`: convert DWR crop maps 2018-2022 to rasters at 500m resolution and filter to unmixed pixels (>75% one crop type in pixel)
+   f. `DWR_to_raster.R`: convert DWR crop maps 2018-2022 to rasters at 500m resolution and filter to unmixed pixels (>75% one crop type in pixel)
 
-   e. `get_crop_acerage.R`: calculate acerage per crop and county for 2018-2022 based on DWR data
+   g. `get_crop_acerage.R`: calculate acerage per crop and county for 2018-2022 based on DWR data
+   
+   h. `calculate_CWD.R`: calculate cumulative water deficit using precipitation and evapotranspiration for each water year 2018-2022 from OpenET and GRIDMET
+   
 4. Process data into final formats for analysis and save to `data/processed_data/for_analysis` (scripts in `scripts/process_data/final`):
 
    a. `combine_data.R`: combine all data into one file by month and _x,y_ pixel
