@@ -7,9 +7,8 @@ library(pacman)
 p_load(here, data.table, sf, raster, terra, exactextractr, dplyr, plyr, tidyr)
 rm(list =ls())
 
-# ATTACH RUGGED EXTERNAL HARD DRIVE
 # Set directories for raw data and saving processed data
-datawd <- '/Volumes/Rugged/remote_sensing/turner+2021_TROPOMI_SIF/TROPOMI_CA'
+datawd <- 'your_wd_here_to_daily_SIF_data_from_Turner+_2019+2021' # Change to your directory where SIF data is stored
 savewd <- here('data', 'processed_data', 'SIF')
 
 # Specify months
@@ -24,7 +23,7 @@ monthyear <- monthyear[which(substr(monthyear,5,7) %in% months_of_interest)]
 
 # Specify the variable name you want to extract
 variable_name <- 'SIF_dc' # daily-corrected SIF
-variable_name <- 'GPP'
+variable_name <- 'GPP' # GPP approximated from SIF based on Turner et al. 2021
 
 # Function to open and write data
 monthly_mean_save <- function(monthyear) {
