@@ -1,6 +1,6 @@
 # Sophie Ruehr
 # Dec 30 2024
-# Running random forest to predict CWE; save outputs
+# Running random forest to predict WUE; save outputs
 
 gc()
 rm(list = ls())
@@ -9,9 +9,9 @@ p_load(plyr, dplyr, stringr, data.table, ggplot2, foreach, boot,
        tibble, ModelMetrics, here, corrplot)
 
 # To generate all required outputs, this code is looped *** 3 times***
-# x3: predicted_variable = 'gpp', 'et', and 'cwe' as target variable
+# x3: predicted_variable = 'gpp', 'et', and 'wue' as target variable
 
-targets <- c('cwe', 'gpp', 'et')
+targets <- c('wue', 'gpp', 'et')
 
 for (predicted_variable in targets) {
   
@@ -43,10 +43,10 @@ for (predicted_variable in targets) {
   data <- fread(data_file)
   
   # Select predicted variable & set save file name
-  if (predicted_variable == 'cwe') {
+  if (predicted_variable == 'wue') {
     data <- data %>%
-      mutate(gap = cwe_scaled)
-    filename_appendix <- '_CWE'
+      mutate(gap = wue_scaled)
+    filename_appendix <- '_WUE'
   } else if (predicted_variable == 'gpp') {
     data <- data %>%
       mutate(gap = gpp_scaled)
@@ -84,8 +84,8 @@ for (predicted_variable in targets) {
                   'annual_pr',
                   'x', 'y',
                   'county',
-                  'gpp_sd', 'gpp_mean', 'et_sd', 'et_mean', 'cwe_sd', 'cwe_mean', 
-                  'gpp', 'et', 'cwe'
+                  'gpp_sd', 'gpp_mean', 'et_sd', 'et_mean', 'wue_sd', 'wue_mean', 
+                  'gpp', 'et', 'wue'
   )
   
   factor_vars <-  c('month', 'year', 'CLASS2', 'county')
@@ -113,8 +113,8 @@ for (predicted_variable in targets) {
   testing <- data_model[-trainIndex, ] 
   
   # Extra variables to include in output but not in modeling
-  extra_vars <- c('x', 'y', 'county', 'gpp_sd', 'gpp_mean', 'et_sd', 'et_mean', 'cwe_sd', 'cwe_mean',
-                  'gpp_s', 'et', 'cwe_s', 'cwe')
+  extra_vars <- c('x', 'y', 'county', 'gpp_sd', 'gpp_mean', 'et_sd', 'et_mean', 'wue_sd', 'wue_mean',
+                  'gpp_s', 'et', 'wue_s', 'wue')
   
   # Set RF parameters -------------------------------------------------------
   
