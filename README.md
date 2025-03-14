@@ -43,7 +43,7 @@ Data were downloaded from a variety of public sources. To run this code, users s
 Some data were downloaded manually:
   - Annual DWR Statewde Crop Mapping (2018-2022): https://data.cnra.ca.gov/dataset/statewide-crop-mapping
   - Annual water table depth from Fan et al. 2013, DOI 10.1126/science.1229881: http://thredds-gfnl.usc.es/thredds/catalog/GLOBALWTDFTP/catalog.html
-   - Daily solar-induced fluorescence data and GPP estimations are from Alex Turner et al. 2020 and 2021 (DOIs 10.5194/bg-17-405-2020 & 10.5194/bg-18-6579-2021), which were generously provided by the author. 
+   - Daily solar-induced fluorescence data and GPP estimations are from Turner et al. [2020](https://doi.org/10.5194/bg-17-405-2020) and [2021](https://doi.org/10.5194/bg-18-6579-2021), which were generously provided by the author. 
 
 Google Earth Engine (GEE) was used to download additional datasets on evapotranspiration, soils, topography, crop cover, and monthly meteorologic variables. See below for Python scripts to download these at either constant, annual, or monthly timesteps. Below are the product names on GEE:
   - Monthly OpenET (evapotranspiration): `OpenET/ENSEMBLE/CONUS/GRIDMET/MONTHLY/v2_0`
