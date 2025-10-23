@@ -1,5 +1,5 @@
-# Crop diversification enhances water-use efficiency in California's Central Valley
-This repository provides documentation on data processing and scripts to support our research on the effect of temporal crop diversification on water-use efficiency, gross primary productivity, and evapotranspiration.
+# Crop diversification improves water-use efficiency and regional water sustainability
+This repository provides documentation on data processing and scripts to support our research on the effect of temporal crop diversification on water-use efficiency, gross primary productivity, and evapotranspiration in support of Ruehr et al. 2025 _Environmental Research Letters_.
 
 ## Requirements and installation instructions
 
